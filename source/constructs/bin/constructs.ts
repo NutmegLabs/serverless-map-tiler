@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { App, DefaultStackSynthesizer } from "aws-cdk-lib";
-import { ServerlessImageHandlerStack } from "../lib/serverless-image-stack";
+import { ServerlessMapTilerStack } from "../lib/serverless-map-tiler";
 
 // CDK and default deployment
 let synthesizer = new DefaultStackSynthesizer({
@@ -23,7 +23,7 @@ const solutionDisplayName = "Serverless Image Handler";
 const solutionVersion = VERSION ?? app.node.tryGetContext("solutionVersion");
 const description = `(${app.node.tryGetContext("solutionId")}) - ${solutionDisplayName}. Version ${solutionVersion}`;
 // eslint-disable-next-line no-new
-new ServerlessImageHandlerStack(app, "ServerlessImageHandlerStack", {
+new ServerlessMapTilerStack(app, "ServerlessMapTilerStack", {
   synthesizer,
   description,
   solutionId: app.node.tryGetContext("solutionId"),

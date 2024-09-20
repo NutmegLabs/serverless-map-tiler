@@ -4,7 +4,7 @@
 import { Template } from "aws-cdk-lib/assertions";
 import { App } from "aws-cdk-lib";
 
-import { ServerlessImageHandlerStack } from "../lib/serverless-image-stack";
+import { ServerlessMapTilerStack } from "../lib/serverless-map-tiler";
 
 test("Serverless Image Handler Stack Snapshot", () => {
   const app = new App({
@@ -15,7 +15,7 @@ test("Serverless Image Handler Stack Snapshot", () => {
     },
   });
 
-  const stack = new ServerlessImageHandlerStack(app, "TestStack", {
+  const stack = new ServerlessMapTilerStack(app, "TestStack", {
     solutionId: "S0ABC",
     solutionName: "sih",
     solutionVersion: "v6.3.0",

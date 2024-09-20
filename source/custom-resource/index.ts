@@ -516,7 +516,7 @@ async function createCloudFrontLoggingBucket(requestProperties: CreateLoggingBuc
   const logBucketSuffix = createHash("md5")
     .update(`${requestProperties.BucketSuffix}${moment.utc().valueOf()}`)
     .digest("hex");
-  const bucketName = `serverless-image-handler-logs-${logBucketSuffix.substring(0, 8)}`.toLowerCase();
+  const bucketName = `serverless-map-tiler-logs-${logBucketSuffix.substring(0, 8)}`.toLowerCase();
 
   // the S3 bucket will be created in 'us-east-1' if the current region is in opt-in regions,
   // because CloudFront does not currently deliver access logs to opt-in region buckets
