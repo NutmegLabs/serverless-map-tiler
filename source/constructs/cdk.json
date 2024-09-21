@@ -1,8 +1,8 @@
 {
   "app": "npx ts-node --prefer-ts-exts bin/constructs.ts",
   "context": {
-    "solutionId": "SO0023",
-    "solutionVersion": "custom-v6.3.0",
-    "solutionName": "serverless-image-handler"
+    "solutionId": "ID_PLACEHOLDER",
+    "solutionVersion": "v0.0.1",
+    "solutionName": "serverless-map-tiler"
   }
 }

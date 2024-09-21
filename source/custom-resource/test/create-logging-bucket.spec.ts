@@ -23,8 +23,8 @@ describe("CREATE_LOGGING_BUCKET", () => {
   };
 
   beforeEach(() => {
-    consoleInfoSpy.mockReset()
-    consoleErrorSpy.mockReset()
+    consoleInfoSpy.mockReset();
+    consoleErrorSpy.mockReset();
   });
 
   it("Should return success and bucket name", async () => {
@@ -63,17 +63,17 @@ describe("CREATE_LOGGING_BUCKET", () => {
     );
     expect(consoleInfoSpy).toHaveBeenCalledWith(
       expect.stringMatching(
-        /^Successfully created bucket 'serverless-image-handler-logs-[a-z0-9]{8}' in 'us-east-1' region/
+        /^Successfully created bucket 'serverless-map-tiler-logs-[a-z0-9]{8}' in 'us-east-1' region/
       )
     );
     expect(consoleInfoSpy).toHaveBeenCalledWith(
-      expect.stringMatching(/^Successfully enabled encryption on bucket 'serverless-image-handler-logs-[a-z0-9]{8}'/)
+      expect.stringMatching(/^Successfully enabled encryption on bucket 'serverless-map-tiler-logs-[a-z0-9]{8}'/)
     );
     expect(consoleInfoSpy).toHaveBeenCalledWith(
-      expect.stringMatching(/^Successfully added policy to bucket 'serverless-image-handler-logs-[a-z0-9]{8}'/)
+      expect.stringMatching(/^Successfully added policy to bucket 'serverless-map-tiler-logs-[a-z0-9]{8}'/)
     );
     expect(consoleInfoSpy).toHaveBeenCalledWith(
-      expect.stringMatching(/^Successfully added tag to bucket 'serverless-image-handler-logs-[a-z0-9]{8}'/)
+      expect.stringMatching(/^Successfully added tag to bucket 'serverless-map-tiler-logs-[a-z0-9]{8}'/)
     );
   });
 
@@ -116,7 +116,7 @@ describe("CREATE_LOGGING_BUCKET", () => {
     expect.assertions(2);
 
     expect(consoleErrorSpy).toHaveBeenCalledWith(
-      expect.stringMatching(/^Could not create bucket 'serverless-image-handler-logs-[a-z0-9]{8}'/)
+      expect.stringMatching(/^Could not create bucket 'serverless-map-tiler-logs-[a-z0-9]{8}'/)
     );
     expect(result).toEqual({
       Status: "FAILED",
@@ -149,11 +149,11 @@ describe("CREATE_LOGGING_BUCKET", () => {
 
     expect(consoleInfoSpy).toHaveBeenCalledWith(
       expect.stringMatching(
-        /^Successfully created bucket 'serverless-image-handler-logs-[a-z0-9]{8}' in 'mock-region-1' region/
+        /^Successfully created bucket 'serverless-map-tiler-logs-[a-z0-9]{8}' in 'mock-region-1' region/
       )
     );
     expect(consoleErrorSpy).toHaveBeenCalledWith(
-      expect.stringMatching(/^Failed to add encryption to bucket 'serverless-image-handler-logs-[a-z0-9]{8}'/)
+      expect.stringMatching(/^Failed to add encryption to bucket 'serverless-map-tiler-logs-[a-z0-9]{8}'/)
     );
     expect(result).toEqual({
       Status: "FAILED",
@@ -194,14 +194,14 @@ describe("CREATE_LOGGING_BUCKET", () => {
 
     expect(consoleInfoSpy).toHaveBeenCalledWith(
       expect.stringMatching(
-        /^Successfully created bucket 'serverless-image-handler-logs-[a-z0-9]{8}' in 'mock-region-1' region/
+        /^Successfully created bucket 'serverless-map-tiler-logs-[a-z0-9]{8}' in 'mock-region-1' region/
       )
     );
     expect(consoleInfoSpy).toHaveBeenCalledWith(
-      expect.stringMatching(/^Successfully enabled encryption on bucket 'serverless-image-handler-logs-[a-z0-9]{8}'/)
+      expect.stringMatching(/^Successfully enabled encryption on bucket 'serverless-map-tiler-logs-[a-z0-9]{8}'/)
     );
     expect(consoleErrorSpy).toHaveBeenCalledWith(
-      expect.stringMatching(/^Failed to add policy to bucket 'serverless-image-handler-logs-[a-z0-9]{8}'/)
+      expect.stringMatching(/^Failed to add policy to bucket 'serverless-map-tiler-logs-[a-z0-9]{8}'/)
     );
     expect(result).toEqual({
       Status: "FAILED",
@@ -247,11 +247,11 @@ describe("CREATE_LOGGING_BUCKET", () => {
 
     expect(consoleInfoSpy).toHaveBeenCalledWith(
       expect.stringMatching(
-        /^Successfully created bucket 'serverless-image-handler-logs-[a-z0-9]{8}' in 'us-east-1' region/
+        /^Successfully created bucket 'serverless-map-tiler-logs-[a-z0-9]{8}' in 'us-east-1' region/
       )
     );
     expect(consoleErrorSpy).toHaveBeenCalledWith(
-      expect.stringMatching(/^Failed to add tag to bucket 'serverless-image-handler-logs-[a-z0-9]{8}'/)
+      expect.stringMatching(/^Failed to add tag to bucket 'serverless-map-tiler-logs-[a-z0-9]{8}'/)
     );
   });
 });

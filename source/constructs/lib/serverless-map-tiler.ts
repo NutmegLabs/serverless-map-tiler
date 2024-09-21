@@ -10,14 +10,14 @@ import { CommonResources } from "./common-resources/common-resources-construct";
 import { FrontEndConstruct as FrontEnd } from "./front-end/front-end-construct";
 import { SolutionConstructProps, YesNo } from "./types";
 
-export interface ServerlessImageHandlerStackProps extends StackProps {
+export interface ServerlessMapTilerStackProps extends StackProps {
   readonly solutionId: string;
   readonly solutionName: string;
   readonly solutionVersion: string;
 }
 
-export class ServerlessImageHandlerStack extends Stack {
-  constructor(scope: Construct, id: string, props: ServerlessImageHandlerStackProps) {
+export class ServerlessMapTilerStack extends Stack {
+  constructor(scope: Construct, id: string, props: ServerlessMapTilerStackProps) {
     super(scope, id, props);
 
     const corsEnabledParameter = new CfnParameter(this, "CorsEnabledParameter", {

@@ -15,13 +15,18 @@ import {
   ImageHandlerError,
   ImageRequestInfo,
   RekognitionCompatibleImage,
+  RequestTypes,
   StatusCodes,
 } from "./lib";
+import { getTileImage } from "./tiler";
 
 export class ImageHandler {
   private readonly LAMBDA_PAYLOAD_LIMIT = 6 * 1024 * 1024;
 
-  constructor(private readonly s3Client: S3, private readonly rekognitionClient: Rekognition) {}
+  constructor(
+    private readonly s3Client: S3,
+    private readonly rekognitionClient: Rekognition
+  ) {}
 
   /**
    * Creates a Sharp object from Buffer
@@ -79,9 +84,14 @@ export class ImageHandler {
     let base64EncodedImage = "";
 
     // Apply edits if specified
-    if (edits && Object.keys(edits).length) {
+    if (imageRequestInfo.tilerParams) {
+      const tileImage = await getTileImage(originalImage, imageRequestInfo.tilerParams);
+      const imageBuffer = await tileImage.toBuffer();
+      base64EncodedImage = imageBuffer.toString("base64");
+    } else if (edits && Object.keys(edits).length) {
       // convert image to Sharp object
-      options.animated = (typeof edits.animated !== 'undefined') ? edits.animated : (imageRequestInfo.contentType === ContentTypes.GIF)
+      options.animated =
+        typeof edits.animated !== "undefined" ? edits.animated : imageRequestInfo.contentType === ContentTypes.GIF;
       let image = await this.instantiateSharpImage(originalImage, edits, options);
 
       // default to non animated if image does not have multiple pages

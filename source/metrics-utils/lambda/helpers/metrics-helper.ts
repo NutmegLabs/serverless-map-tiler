@@ -39,7 +39,7 @@ export class MetricsHelper {
     const endTime = new Date(event.time);
     const input: GetMetricDataCommandInput = {
       MetricDataQueries: metricsDataProps,
-      StartTime: new Date(endTime.getTime() - ((EXECUTION_DAY == ExecutionDay.DAILY ? 1 : 7) * 86400 * 1000)), // 7 or 1 day(s) previous
+      StartTime: new Date(endTime.getTime() - (EXECUTION_DAY == ExecutionDay.DAILY ? 1 : 7) * 86400 * 1000), // 7 or 1 day(s) previous
       EndTime: endTime,
     };
     return await this.fetchMetricsData(input);
@@ -125,7 +125,7 @@ export class MetricsHelper {
 
   async startQuery(queryProp: QueryProps, endTime: Date): Promise<string> {
     const input: StartQueryCommandInput = {
-      startTime: endTime.getTime() - ((EXECUTION_DAY == ExecutionDay.DAILY ? 1 : 7) * 86400 * 1000),
+      startTime: endTime.getTime() - (EXECUTION_DAY == ExecutionDay.DAILY ? 1 : 7) * 86400 * 1000,
       endTime: endTime.getTime(),
       ...queryProp,
     };

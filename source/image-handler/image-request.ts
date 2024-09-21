@@ -15,6 +15,7 @@ import {
   ImageRequestInfo,
   RequestTypes,
   StatusCodes,
+  TilerImageRequest,
 } from "./lib";
 import { SecretProvider } from "./secret-provider";
 import { ThumborMapper } from "./thumbor-mapper";
@@ -30,7 +31,10 @@ type OriginalImageInfo = Partial<{
 export class ImageRequest {
   private static readonly DEFAULT_EFFORT = 4;
 
-  constructor(private readonly s3Client: S3, private readonly secretProvider: SecretProvider) {}
+  constructor(
+    private readonly s3Client: S3,
+    private readonly secretProvider: SecretProvider
+  ) {}
 
   /**
    * Determines the output format of an image
@@ -104,6 +108,7 @@ export class ImageRequest {
       imageRequestInfo.bucket = this.parseImageBucket(event, imageRequestInfo.requestType);
       imageRequestInfo.key = this.parseImageKey(event, imageRequestInfo.requestType, imageRequestInfo.bucket);
       imageRequestInfo.edits = this.parseImageEdits(event, imageRequestInfo.requestType);
+      imageRequestInfo.tilerParams = this.parseTilerParams(event, imageRequestInfo.requestType);
 
       const originalImage = await this.getOriginalImage(imageRequestInfo.bucket, imageRequestInfo.key);
       imageRequestInfo = { ...imageRequestInfo, ...originalImage };
@@ -282,6 +287,19 @@ export class ImageRequest {
         "The edits you provided could not be parsed. Please check the syntax of your request and refer to the documentation for additional guidance."
       );
     }
+  }
+
+  /**
+   * Parses the tiler parameters from the event.
+   * @param event Lambda request body.
+   * @returns The tiler parameters.
+   */
+  public parseTilerParams(event: ImageHandlerEvent, requestType: RequestTypes): TilerImageRequest | undefined {
+    if (requestType === RequestTypes.DEFAULT) {
+      const decoded = this.decodeRequest(event);
+      return decoded.tilerParams;
+    }
+    return undefined;
   }
 
   /**
