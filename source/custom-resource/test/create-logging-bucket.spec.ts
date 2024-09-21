@@ -23,8 +23,8 @@ describe("CREATE_LOGGING_BUCKET", () => {
   };
 
   beforeEach(() => {
-    consoleInfoSpy.mockReset()
-    consoleErrorSpy.mockReset()
+    consoleInfoSpy.mockReset();
+    consoleErrorSpy.mockReset();
   });
 
   it("Should return success and bucket name", async () => {

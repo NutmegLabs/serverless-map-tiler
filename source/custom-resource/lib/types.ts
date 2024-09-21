@@ -21,7 +21,10 @@ export type ResourcePropertyTypes =
   | CreateLoggingBucketRequestProperties;
 
 export class CustomResourceError extends Error {
-  constructor(public readonly code: string, public readonly message: string) {
+  constructor(
+    public readonly code: string,
+    public readonly message: string
+  ) {
     super();
   }
 }

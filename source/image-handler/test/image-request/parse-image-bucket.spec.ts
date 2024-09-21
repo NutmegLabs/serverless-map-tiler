@@ -137,8 +137,8 @@ describe("parseImageBucket", () => {
 
     const bucket = imageRequest.parseImageBucket(event, RequestTypes.THUMBOR);
     // Assert
-    expect(bucket).toEqual("allowedBucket001")
-  })
+    expect(bucket).toEqual("allowedBucket001");
+  });
 
   it("should parse bucket-name from any section in the url", () => {
     // Arrange
@@ -150,8 +150,8 @@ describe("parseImageBucket", () => {
 
     const bucket = imageRequest.parseImageBucket(event, RequestTypes.THUMBOR);
     // Assert
-    expect(bucket).toEqual("test-bucket")
-  })
+    expect(bucket).toEqual("test-bucket");
+  });
 
   it("should only parse bucket-names in source_buckets", () => {
     // Arrange
@@ -163,8 +163,8 @@ describe("parseImageBucket", () => {
 
     const bucket = imageRequest.parseImageBucket(event, RequestTypes.THUMBOR);
     // Assert
-    expect(bucket).toEqual("test-bucket")
-  })
+    expect(bucket).toEqual("test-bucket");
+  });
 
   it("should parse bucket-name from first part in thumbor request and return it", () => {
     // Arrange
@@ -176,8 +176,8 @@ describe("parseImageBucket", () => {
 
     const bucket = imageRequest.parseImageBucket(event, RequestTypes.THUMBOR);
     // Assert
-    expect(bucket).toEqual("test-bucket")
-  })
+    expect(bucket).toEqual("test-bucket");
+  });
 
   it("should take bucket-name from env-variable if not present in the URL", () => {
     // Arrange
@@ -189,6 +189,6 @@ describe("parseImageBucket", () => {
 
     const bucket = imageRequest.parseImageBucket(event, RequestTypes.THUMBOR);
     // Assert
-    expect(bucket).toEqual("allowedBucket001")
-  })
+    expect(bucket).toEqual("allowedBucket001");
+  });
 });

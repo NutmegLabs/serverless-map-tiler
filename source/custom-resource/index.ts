@@ -114,13 +114,10 @@ export async function handler(event: CustomResourceRequest, context: LambdaConte
       }
       case CustomResourceActions.CREATE_LOGGING_BUCKET: {
         const allowedRequestTypes = [CustomResourceRequestTypes.CREATE];
-        await performRequest(
-          createCloudFrontLoggingBucket,
-          RequestType,
-          allowedRequestTypes,
-          response,
-          { ...ResourceProperties, StackId: event.StackId } as CreateLoggingBucketRequestProperties
-        );
+        await performRequest(createCloudFrontLoggingBucket, RequestType, allowedRequestTypes, response, {
+          ...ResourceProperties,
+          StackId: event.StackId,
+        } as CreateLoggingBucketRequestProperties);
         break;
       }
       default:
@@ -610,9 +607,10 @@ async function createCloudFrontLoggingBucket(requestProperties: CreateLoggingBuc
         TagSet: [
           {
             Key: "stack-id",
-            Value: requestProperties.StackId
-          }]
-      }
+            Value: requestProperties.StackId,
+          },
+        ],
+      },
     };
     await s3Client.putBucketTagging(taggingParams).promise();
 
