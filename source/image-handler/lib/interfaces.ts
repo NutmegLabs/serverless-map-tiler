@@ -42,6 +42,8 @@ export interface TilerImageRequest {
   topLeftLong: number;
   overlayWidthInMeters: number;
   rotationDegrees: number;
+  aspectRatioWidth: number;
+  aspectRatioHeight: number;
   x: number;
   y: number;
   zoom: number;
