@@ -118,9 +118,8 @@ export class ImageRequest {
       // If the original image is SVG file and it has any edits but no output format, change the format to PNG.
       if (
         imageRequestInfo.contentType === ContentTypes.SVG &&
-        imageRequestInfo.edits &&
-        Object.keys(imageRequestInfo.edits).length > 0 &&
-        !imageRequestInfo.edits.toFormat
+        ((imageRequestInfo.edits && Object.keys(imageRequestInfo.edits).length > 0) || imageRequestInfo.tilerParams) &&
+        !imageRequestInfo.edits?.toFormat
       ) {
         imageRequestInfo.outputFormat = ImageFormatTypes.PNG;
       }
@@ -132,7 +131,7 @@ export class ImageRequest {
        */
       if (
         imageRequestInfo.contentType !== ContentTypes.SVG ||
-        imageRequestInfo.edits.toFormat ||
+        imageRequestInfo.edits?.toFormat ||
         imageRequestInfo.outputFormat
       ) {
         this.determineOutputFormat(imageRequestInfo, event);

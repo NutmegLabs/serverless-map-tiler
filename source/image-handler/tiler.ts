@@ -77,17 +77,17 @@ function imageSizeAfterRotation(size: [number, number], degrees: number): [numbe
 }
 
 export const getTileImage = async (originalImage: Buffer, tilerParams: TilerImageRequest): Promise<sharp.Sharp> => {
-  const { x, y, zoom, overlayWidthInMeters, rotationDegrees, topLeftLat, topLeftLong } = tilerParams;
+  const { x, y, zoom, overlayWidthInMeters, rotationDegrees, topLeftLat, topLeftLong, aspectRatioWidth, aspectRatioHeight } = tilerParams;
+
   const scale = Math.pow(2, zoom);
 
   const rawImage = sharp(originalImage);
-  const metadata = await rawImage.metadata();
 
   const topLeft: LatLng = { lat: topLeftLat, lng: topLeftLong };
   const topRight = computeOffset(topLeft, overlayWidthInMeters, 90 + rotationDegrees);
   const bottomRight = computeOffset(
     topRight,
-    overlayWidthInMeters * (metadata.height / metadata.width),
+    overlayWidthInMeters * (aspectRatioHeight / aspectRatioWidth),
     180 + rotationDegrees
   );
   const bottomLeft = computeOffset(bottomRight, overlayWidthInMeters, 270 + rotationDegrees);
@@ -126,11 +126,11 @@ export const getTileImage = async (originalImage: Buffer, tilerParams: TilerImag
   }
 
   let imageTile = await rawImage.rotate(rotationDegrees, {
-      background: { r: 63, g: 120, b: 106, alpha: 255 },
+    background: { r: 63, g: 120, b: 106, alpha: 255 },
   });
 
   const [rotatedImageWidth, rotatedImageHeight] = imageSizeAfterRotation(
-    [metadata.width, metadata.height],
+    [aspectRatioWidth, aspectRatioHeight],
     rotationDegrees
   );
 
