@@ -126,7 +126,7 @@ export const getTileImage = async (originalImage: Buffer, tilerParams: TilerImag
   }
 
   let imageTile = await rawImage.rotate(rotationDegrees, {
-    background: { r: 0, g: 0, b: 0, alpha: 0 },
+      background: { r: 63, g: 120, b: 106, alpha: 255 },
   });
 
   const [rotatedImageWidth, rotatedImageHeight] = imageSizeAfterRotation(
@@ -169,7 +169,7 @@ export const getTileImage = async (originalImage: Buffer, tilerParams: TilerImag
       right: rightExtension,
       bottom: bottomExtension,
       left: leftExtension,
-      background: { r: 63, g: 120, b: 106, alpha: 255 }, // Changed color to #3F786A
+      background: { r: 63, g: 120, b: 106, alpha: 255 },
     });
   }
 
