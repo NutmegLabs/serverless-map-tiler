@@ -431,7 +431,7 @@ exports[`Serverless Image Handler Stack Snapshot 1`] = `
     "BackEndCachePolicy1DCE9B1B": {
       "Properties": {
         "CachePolicyConfig": {
-          "DefaultTTL": 86400,
+          "DefaultTTL": 31536000,
           "MaxTTL": 31536000,
           "MinTTL": 1,
           "Name": {
