@@ -172,6 +172,10 @@ export const getTileImage = async (originalImage: Buffer, tilerParams: TilerImag
     });
   }
 
+  if (right - left > 256 || bottom - top > 256) {
   const buf = await imageTile.toBuffer();
-  return await sharp(buf).resize(256, 256, {fit: 'fill'})
+    const resizedImage = await sharp(buf).resize(256, 256, {fit: 'fill'})
+    return resizedImage;
+  }
+  return imageTile;
 };
