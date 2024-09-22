@@ -146,7 +146,7 @@ export class BackEnd extends Construct {
 
     const cachePolicy = new CachePolicy(this, "CachePolicy", {
       cachePolicyName: `ServerlessImageHandler-${props.uuid}`,
-      defaultTtl: Duration.days(1),
+      defaultTtl: Duration.days(365),
       minTtl: Duration.seconds(1),
       maxTtl: Duration.days(365),
       enableAcceptEncodingGzip: false,

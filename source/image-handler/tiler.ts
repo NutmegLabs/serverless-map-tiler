@@ -129,10 +129,9 @@ export const getTileImage = async (originalImage: Buffer, tilerParams: TilerImag
     background: { r: 63, g: 120, b: 106, alpha: 255 },
   });
 
-  const [rotatedImageWidth, rotatedImageHeight] = imageSizeAfterRotation(
-    [aspectRatioWidth, aspectRatioHeight],
-    rotationDegrees
-  );
+  const {info} = await imageTile.toBuffer({resolveWithObject: true});
+  const rotatedImageWidth = info.width;
+  const rotatedImageHeight = info.height;
 
   const left = Math.round(Math.max(0, (x - boundingBoxTopLeftTile.x) / boundingBoxWidthInTiles) * rotatedImageWidth);
   const top = Math.round(Math.max(0, (y - boundingBoxTopLeftTile.y) / boundingBoxHeightInTiles) * rotatedImageHeight);
@@ -173,5 +172,6 @@ export const getTileImage = async (originalImage: Buffer, tilerParams: TilerImag
     });
   }
 
-  return imageTile;
+  const buf = await imageTile.toBuffer();
+  return await sharp(buf).resize(256, 256, {fit: 'fill'})
 };
