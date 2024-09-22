@@ -14,7 +14,8 @@
     "pretest": "npm run clean && npm ci",
     "test": "jest --coverage --silent",
     "bump-version": "npm version $(cat ../../VERSION.txt) --allow-same-version",
-    "run-handler": "ts-node script/run-handler.ts"
+    "run-handler": "ts-node script/run-handler.ts",
+    "image-convert": "ts-node script/image-convert.ts"
   },
   "dependencies": {
     "aws-sdk": "^2.1529.0",
