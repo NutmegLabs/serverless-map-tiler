@@ -13,7 +13,8 @@
     "clean": "rm -rf node_modules/ dist/ coverage/",
     "pretest": "npm run clean && npm ci",
     "test": "jest --coverage --silent",
-    "bump-version": "npm version $(cat ../../VERSION.txt) --allow-same-version"
+    "bump-version": "npm version $(cat ../../VERSION.txt) --allow-same-version",
+    "run-handler": "ts-node script/run-handler.ts"
   },
   "dependencies": {
     "aws-sdk": "^2.1529.0",
