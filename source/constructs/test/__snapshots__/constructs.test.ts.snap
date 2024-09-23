@@ -455,11 +455,7 @@ exports[`Serverless Image Handler Stack Snapshot 1`] = `
             "EnableAcceptEncodingBrotli": false,
             "EnableAcceptEncodingGzip": false,
             "HeadersConfig": {
-              "HeaderBehavior": "whitelist",
-              "Headers": [
-                "origin",
-                "accept",
-              ],
+              "HeaderBehavior": "none",
             },
             "QueryStringsConfig": {
               "QueryStringBehavior": "whitelist",
@@ -1379,11 +1375,7 @@ exports[`Serverless Image Handler Stack Snapshot 1`] = `
             "CookieBehavior": "none",
           },
           "HeadersConfig": {
-            "HeaderBehavior": "whitelist",
-            "Headers": [
-              "origin",
-              "accept",
-            ],
+            "HeaderBehavior": "none",
           },
           "Name": {
             "Fn::Join": [

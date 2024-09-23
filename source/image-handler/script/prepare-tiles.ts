@@ -78,7 +78,7 @@ async function loadMapFromDynamoDB(mapId: string): Promise<DigitalMap> {
 
     const minZoom = Math.floor(map.default_map_zoom?.value ? map.default_map_zoom.value - 2 : 14);
 
-    for (let zoom = minZoom; zoom <= minZoom /* + 5 */; zoom++) {
+    for (let zoom = minZoom; zoom <= 22; zoom++) {
       console.log(`Processing zoom level ${zoom}`);
 
       await preloadTiles(map, zoom);
@@ -201,7 +201,6 @@ async function processTiles(tiles: { x: number, y: number }[], map: DigitalMap, 
 
   const promises: Promise<any>[] = [];
   for (const tileUrl of tileUrls) {
-    console.log(`Downloading ${tileUrl}`);
     // Download the image
     promises.push(fetch(tileUrl));
   }
