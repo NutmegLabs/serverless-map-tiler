@@ -110,38 +110,14 @@ export class ImageRequest {
       imageRequestInfo.edits = this.parseImageEdits(event, imageRequestInfo.requestType);
       imageRequestInfo.tilerParams = this.parseTilerParams(event, imageRequestInfo.requestType);
 
-      const startTime = Date.now();
-      const originalImage = await this.getOriginalImage(imageRequestInfo.bucket, imageRequestInfo.key);
-      console.log(`getOriginalImage(): ${Date.now() - startTime}ms`);
-
-      imageRequestInfo = { ...imageRequestInfo, ...originalImage };
-
       imageRequestInfo.headers = this.parseImageHeaders(event, imageRequestInfo.requestType);
 
-      // If the original image is SVG file and it has any edits but no output format, change the format to PNG.
-      if (
-        imageRequestInfo.contentType === ContentTypes.SVG &&
-        ((imageRequestInfo.edits && Object.keys(imageRequestInfo.edits).length > 0) || imageRequestInfo.tilerParams) &&
-        !imageRequestInfo.edits?.toFormat
-      ) {
-        imageRequestInfo.outputFormat = ImageFormatTypes.PNG;
-      }
-
-      /* Decide the output format of the image.
-       * 1) If the format is provided, the output format is the provided format.
-       * 2) If headers contain "Accept: image/webp", the output format is webp.
-       * 3) Use the default image format for the rest of cases.
-       */
-      if (
-        imageRequestInfo.contentType !== ContentTypes.SVG ||
-        imageRequestInfo.edits?.toFormat ||
-        imageRequestInfo.outputFormat
-      ) {
-        this.determineOutputFormat(imageRequestInfo, event);
-      }
-
-      // Fix quality for Thumbor and Custom request type if outputFormat is different from quality type.
-      this.fixQuality(imageRequestInfo);
+      imageRequestInfo.outputFormat = ImageFormatTypes.PNG;
+      imageRequestInfo.contentType = ContentTypes.PNG;
+      imageRequestInfo.headers = {
+        ...imageRequestInfo.headers,
+        "Content-Type": ContentTypes.PNG,
+      };
 
       return imageRequestInfo;
     } catch (error) {
