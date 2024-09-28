@@ -59,11 +59,16 @@ function computeOffset(from: LatLng, distance: number, heading: number): LatLng 
 }
 
 export const getTileImage = async (originalImage: Buffer, tilerParams: TilerImageRequest): Promise<sharp.Sharp> => {
+  let startTime = Date.now();
+
   const { x, y, zoom, overlayWidthInMeters, rotationDegrees, topLeftLat, topLeftLong, aspectRatioWidth, aspectRatioHeight } = tilerParams;
 
   const scale = Math.pow(2, zoom);
 
   const rawImage = sharp(originalImage);
+  console.log(`sharp(): ${Date.now() - startTime}ms`);
+
+  startTime = Date.now();
 
   const topLeft: LatLng = { lat: topLeftLat, lng: topLeftLong };
   const topRight = computeOffset(topLeft, overlayWidthInMeters, 90 + rotationDegrees);
@@ -106,13 +111,25 @@ export const getTileImage = async (originalImage: Buffer, tilerParams: TilerImag
     return sharp();
   }
 
+  console.log(`math: ${Date.now() - startTime}ms`);
+
+  startTime = Date.now();
+
   let imageTile = await rawImage.rotate(rotationDegrees, {
     background: { r: 63, g: 120, b: 106, alpha: 255 },
   });
 
+  console.log(`rotate(): ${Date.now() - startTime}ms`);
+
+  startTime = Date.now();
+
   const {info} = await imageTile.toBuffer({resolveWithObject: true});
   const rotatedImageWidth = info.width;
   const rotatedImageHeight = info.height;
+
+  console.log(`toBuffer(): ${Date.now() - startTime}ms`);
+
+  startTime = Date.now();
 
   const left = Math.round(Math.max(0, (x - boundingBoxTopLeftTile.x) / boundingBoxWidthInTiles) * rotatedImageWidth);
   const top = Math.round(Math.max(0, (y - boundingBoxTopLeftTile.y) / boundingBoxHeightInTiles) * rotatedImageHeight);
@@ -129,6 +146,10 @@ export const getTileImage = async (originalImage: Buffer, tilerParams: TilerImag
     width: right - left,
     height: bottom - top,
   });
+
+  console.log(`extract(): ${Date.now() - startTime}ms`);
+
+  startTime = Date.now();
 
   const leftExtension = Math.round(
     Math.max(0, ((boundingBoxTopLeftTile.x - x) / boundingBoxWidthInTiles) * rotatedImageWidth)
@@ -153,9 +174,15 @@ export const getTileImage = async (originalImage: Buffer, tilerParams: TilerImag
     });
   }
 
+  console.log(`extend(): ${Date.now() - startTime}ms`);
+
+  startTime = Date.now();
+
   if (right - left > 256 || bottom - top > 256) {
-  const buf = await imageTile.toBuffer();
+    const buf = await imageTile.toBuffer();
     const resizedImage = await sharp(buf).resize(256, 256, {fit: 'fill'})
+
+    console.log(`resize(): ${Date.now() - startTime}ms`);
     return resizedImage;
   }
 
