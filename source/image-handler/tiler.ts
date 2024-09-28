@@ -176,10 +176,15 @@ export const getTileImage = async (originalImage: Buffer, tilerParams: TilerImag
 
   console.log(`extend(): ${Date.now() - startTime}ms`);
 
-  startTime = Date.now();
-
   if (right - left > 256 || bottom - top > 256) {
+    startTime = Date.now();
+
     const buf = await imageTile.toBuffer();
+
+    console.log(`toBuffer(): ${Date.now() - startTime}ms`);
+
+    startTime = Date.now();
+
     const resizedImage = await sharp(buf).resize(256, 256, {fit: 'fill'})
 
     console.log(`resize(): ${Date.now() - startTime}ms`);
