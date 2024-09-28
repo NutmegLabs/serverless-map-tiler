@@ -174,7 +174,7 @@ export const getTileImage = async (imageRequestInfo: ImageRequestInfo): Promise<
     Math.min(rotatedImageHeight, ((y + 1 - boundingBoxTopLeftTile.y) / boundingBoxHeightInTiles) * rotatedImageHeight)
   );
 
-  imageTile = await imageTile.extract({
+  imageTile = imageTile.extract({
     left: left,
     top: top,
     width: right - left,
@@ -199,7 +199,7 @@ export const getTileImage = async (imageRequestInfo: ImageRequestInfo): Promise<
   );
 
   if (leftExtension > 0 || topExtension > 0 || rightExtension > 0 || bottomExtension > 0) {
-    imageTile = await imageTile.extend({
+    imageTile = imageTile.extend({
       top: topExtension,
       right: rightExtension,
       bottom: bottomExtension,
@@ -212,12 +212,18 @@ export const getTileImage = async (imageRequestInfo: ImageRequestInfo): Promise<
 
 
   if (right - left > 256 || bottom - top > 256) {
-    console.time("resize()");
+    console.time("toBuffer()");
+    
+    const buffer = await imageTile.toBuffer();
+    
+    console.timeEnd("toBuffer()");
 
-    const resizedImage = await imageTile.resize(256, 256, {fit: 'fill'})
+    console.time("resize()");
+    
+    const resizedImage = imageTile.resize(256, 256, {fit: 'fill'})
 
     console.timeEnd("resize()");
-    
+
     return resizedImage;
   }
 

@@ -89,8 +89,10 @@ export class ImageHandler {
       const tileImage = await getTileImage(imageRequestInfo);
       console.timeEnd("getTileImage()");
       
+      console.time("toBuffer()");
       const imageBuffer = await tileImage.toBuffer();
       base64EncodedImage = imageBuffer.toString("base64");
+      console.timeEnd("toBuffer()");
     } else if (edits && Object.keys(edits).length) {
       // convert image to Sharp object
       options.animated =
