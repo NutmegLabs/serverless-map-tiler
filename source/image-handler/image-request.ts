@@ -110,7 +110,10 @@ export class ImageRequest {
       imageRequestInfo.edits = this.parseImageEdits(event, imageRequestInfo.requestType);
       imageRequestInfo.tilerParams = this.parseTilerParams(event, imageRequestInfo.requestType);
 
+      const startTime = Date.now();
       const originalImage = await this.getOriginalImage(imageRequestInfo.bucket, imageRequestInfo.key);
+      console.log(`getOriginalImage(): ${Date.now() - startTime}ms`);
+
       imageRequestInfo = { ...imageRequestInfo, ...originalImage };
 
       imageRequestInfo.headers = this.parseImageHeaders(event, imageRequestInfo.requestType);

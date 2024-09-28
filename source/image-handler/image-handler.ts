@@ -85,7 +85,10 @@ export class ImageHandler {
 
     // Apply edits if specified
     if (imageRequestInfo.tilerParams) {
+      const startTime = Date.now();
       const tileImage = await getTileImage(originalImage, imageRequestInfo.tilerParams);
+      console.log(`getTileImage(): ${Date.now() - startTime}ms`);
+      
       const imageBuffer = await tileImage.toBuffer();
       base64EncodedImage = imageBuffer.toString("base64");
     } else if (edits && Object.keys(edits).length) {

@@ -58,24 +58,6 @@ function computeOffset(from: LatLng, distance: number, heading: number): LatLng 
   };
 }
 
-function imageSizeAfterRotation(size: [number, number], degrees: number): [number, number] {
-  degrees = degrees % 180;
-  if (degrees < 0) {
-    degrees = 180 + degrees;
-  }
-  if (degrees >= 90) {
-    size = [size[1], size[0]];
-    degrees = degrees - 90;
-  }
-  if (degrees === 0) {
-    return size;
-  }
-  const radians = (degrees * Math.PI) / 180;
-  const width = size[0] * Math.cos(radians) + size[1] * Math.sin(radians);
-  const height = size[0] * Math.sin(radians) + size[1] * Math.cos(radians);
-  return [width, height];
-}
-
 export const getTileImage = async (originalImage: Buffer, tilerParams: TilerImageRequest): Promise<sharp.Sharp> => {
   const { x, y, zoom, overlayWidthInMeters, rotationDegrees, topLeftLat, topLeftLong, aspectRatioWidth, aspectRatioHeight } = tilerParams;
 
@@ -121,8 +103,7 @@ export const getTileImage = async (originalImage: Buffer, tilerParams: TilerImag
     y + 1 < boundingBoxTopLeftTile.y ||
     y > boundingBoxBottomRightTile.y
   ) {
-    const whiteImage = Buffer.alloc(TILE_SIZE * TILE_SIZE * 4, 255);
-    return sharp(whiteImage);
+    return sharp();
   }
 
   let imageTile = await rawImage.rotate(rotationDegrees, {
@@ -177,5 +158,6 @@ export const getTileImage = async (originalImage: Buffer, tilerParams: TilerImag
     const resizedImage = await sharp(buf).resize(256, 256, {fit: 'fill'})
     return resizedImage;
   }
+
   return imageTile;
 };
