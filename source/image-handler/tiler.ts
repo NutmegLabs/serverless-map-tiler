@@ -220,7 +220,7 @@ export const getTileImage = async (imageRequestInfo: ImageRequestInfo): Promise<
 
     console.time("resize()");
     
-    const resizedImage = imageTile.resize(256, 256, {fit: 'fill'})
+    const resizedImage = sharp(buffer).resize(256, 256, {fit: 'fill'})
 
     console.timeEnd("resize()");
 

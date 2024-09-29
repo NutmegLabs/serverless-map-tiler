@@ -39,9 +39,22 @@ export async function handler(event: ImageHandlerEvent): Promise<ImageHandlerExe
     let headers = getResponseHeaders(false, isAlb);
     headers["Content-Type"] = imageRequestInfo.contentType;
     // eslint-disable-next-line dot-notation
-    headers["Expires"] = imageRequestInfo.expires;
-    headers["Last-Modified"] = imageRequestInfo.lastModified;
-    headers["Cache-Control"] = imageRequestInfo.cacheControl;
+
+    if (imageRequestInfo.expires) {
+      headers["Expires"] = imageRequestInfo.expires;
+    } else {
+      headers["Expires"] = "Thu, 31 Dec 2037 23:55:55 GMT";
+    }
+    if (imageRequestInfo.lastModified) {
+      headers["Last-Modified"] = imageRequestInfo.lastModified;
+    } else {
+      headers["Last-Modified"] = "Thu, 01 Jan 1970 00:00:00 GMT";
+    }
+    if (imageRequestInfo.cacheControl) {
+      headers["Cache-Control"] = imageRequestInfo.cacheControl;
+    } else {
+      headers["Cache-Control"] = "public, max-age=31536000, immutable";
+    }
 
     // Apply the custom headers overwriting any that may need overwriting
     if (imageRequestInfo.headers) {

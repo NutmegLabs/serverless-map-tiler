@@ -15,6 +15,7 @@
     "test": "jest --coverage --silent",
     "bump-version": "npm version $(cat ../../VERSION.txt) --allow-same-version",
     "run-handler": "ts-node script/run-handler.ts",
+    "local-server": "ts-node script/local-server.ts",
     "image-convert": "ts-node script/image-convert.ts",
     "prepare-tiles": "ts-node script/prepare-tiles.ts"
   },
@@ -24,6 +25,7 @@
     "aws-sdk": "^2.1529.0",
     "color": "4.2.3",
     "color-name": "1.1.4",
+    "express": "^4.21.0",
     "sharp": "^0.32.6"
   },
   "devDependencies": {
