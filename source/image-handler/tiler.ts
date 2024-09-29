@@ -1,5 +1,16 @@
-import { TilerImageRequest } from "./lib";
+import S3 from "aws-sdk/clients/s3";
+
+import { getOptions } from "../solution-utils/get-options";
+import { ImageRequest } from "./image-request";
+import { ImageRequestInfo, TilerImageRequest } from "./lib";
 import sharp from "sharp";
+import { SecretProvider } from "./secret-provider";
+import { SecretsManager } from "aws-sdk";
+
+const awsSdkOptions = getOptions();
+const s3Client = new S3(awsSdkOptions);
+const secretsManagerClient = new SecretsManager(awsSdkOptions);
+const secretProvider = new SecretProvider(secretsManagerClient);
 
 const EARTH_RADIUS = 6378137; // Earth's radius in meters
 const TILE_SIZE = 256; // Standard tile size in pixels
@@ -58,17 +69,29 @@ function computeOffset(from: LatLng, distance: number, heading: number): LatLng 
   };
 }
 
-export const getTileImage = async (originalImage: Buffer, tilerParams: TilerImageRequest): Promise<sharp.Sharp> => {
-  let startTime = Date.now();
+function imageSizeAfterRotation(size: [number, number], degrees: number): [number, number] {
+  degrees = degrees % 180;
+  if (degrees < 0) {
+    degrees = 180 + degrees;
+  }
+  if (degrees >= 90) {
+    size = [size[1], size[0]];
+    degrees = degrees - 90;
+  }
+  if (degrees === 0) {
+    return size;
+  }
+  const radians = (degrees * Math.PI) / 180;
+  const width = size[0] * Math.cos(radians) + size[1] * Math.sin(radians);
+  const height = size[0] * Math.sin(radians) + size[1] * Math.cos(radians);
+  return [width, height];
+}
 
+export const getTileImage = async (imageRequestInfo: ImageRequestInfo): Promise<sharp.Sharp> => {
+  const tilerParams = imageRequestInfo.tilerParams;
   const { x, y, zoom, overlayWidthInMeters, rotationDegrees, topLeftLat, topLeftLong, aspectRatioWidth, aspectRatioHeight } = tilerParams;
 
   const scale = Math.pow(2, zoom);
-
-  const rawImage = sharp(originalImage);
-  console.log(`sharp(): ${Date.now() - startTime}ms`);
-
-  startTime = Date.now();
 
   const topLeft: LatLng = { lat: topLeftLat, lng: topLeftLong };
   const topRight = computeOffset(topLeft, overlayWidthInMeters, 90 + rotationDegrees);
@@ -108,29 +131,40 @@ export const getTileImage = async (originalImage: Buffer, tilerParams: TilerImag
     y + 1 < boundingBoxTopLeftTile.y ||
     y > boundingBoxBottomRightTile.y
   ) {
-    return sharp();
+    // Create a 4x4 image with background color
+    return sharp({
+      create: {
+        width: 4,
+        height: 4,
+        channels: 4,
+        background: { r: 63, g: 120, b: 106, alpha: 255 },
+      },
+    });
   }
 
-  console.log(`math: ${Date.now() - startTime}ms`);
+  console.time("getOriginalImage()");
+  const {originalImage} = await new ImageRequest(s3Client, secretProvider).getOriginalImage(imageRequestInfo.bucket, imageRequestInfo.key);
+  console.timeEnd("getOriginalImage()");
 
-  startTime = Date.now();
+  let imageTile = sharp(originalImage);
 
-  let imageTile = await rawImage.rotate(rotationDegrees, {
-    background: { r: 63, g: 120, b: 106, alpha: 255 },
-  });
+  if (rotationDegrees !== 0) {
+    console.time("rotate()");
 
-  console.log(`rotate(): ${Date.now() - startTime}ms`);
+    imageTile = await imageTile.rotate(rotationDegrees, {
+      background: { r: 63, g: 120, b: 106, alpha: 255 },
+    });
 
-  startTime = Date.now();
+    console.timeEnd("rotate()");
+  }
 
-  const {info} = await imageTile.toBuffer({resolveWithObject: true});
-  const rotatedImageWidth = info.width;
-  const rotatedImageHeight = info.height;
+  console.time("imageSizeAfterRotation()");
 
-  console.log(`toBuffer(): ${Date.now() - startTime}ms`);
+  const [rotatedImageWidth, rotatedImageHeight] = imageSizeAfterRotation([aspectRatioWidth, aspectRatioHeight], rotationDegrees);
 
-  startTime = Date.now();
+  console.timeEnd("imageSizeAfterRotation()");
 
+  console.time("extract()");
   const left = Math.round(Math.max(0, (x - boundingBoxTopLeftTile.x) / boundingBoxWidthInTiles) * rotatedImageWidth);
   const top = Math.round(Math.max(0, (y - boundingBoxTopLeftTile.y) / boundingBoxHeightInTiles) * rotatedImageHeight);
   const right = Math.round(
@@ -140,16 +174,16 @@ export const getTileImage = async (originalImage: Buffer, tilerParams: TilerImag
     Math.min(rotatedImageHeight, ((y + 1 - boundingBoxTopLeftTile.y) / boundingBoxHeightInTiles) * rotatedImageHeight)
   );
 
-  imageTile = await imageTile.extract({
+  imageTile = imageTile.extract({
     left: left,
     top: top,
     width: right - left,
     height: bottom - top,
   });
 
-  console.log(`extract(): ${Date.now() - startTime}ms`);
+  console.timeEnd("extract()");
 
-  startTime = Date.now();
+  console.time("extend()");
 
   const leftExtension = Math.round(
     Math.max(0, ((boundingBoxTopLeftTile.x - x) / boundingBoxWidthInTiles) * rotatedImageWidth)
@@ -165,7 +199,7 @@ export const getTileImage = async (originalImage: Buffer, tilerParams: TilerImag
   );
 
   if (leftExtension > 0 || topExtension > 0 || rightExtension > 0 || bottomExtension > 0) {
-    imageTile = await imageTile.extend({
+    imageTile = imageTile.extend({
       top: topExtension,
       right: rightExtension,
       bottom: bottomExtension,
@@ -174,20 +208,22 @@ export const getTileImage = async (originalImage: Buffer, tilerParams: TilerImag
     });
   }
 
-  console.log(`extend(): ${Date.now() - startTime}ms`);
+  console.timeEnd("extend()");
+
 
   if (right - left > 256 || bottom - top > 256) {
-    startTime = Date.now();
+    console.time("toBuffer()");
+    
+    const buffer = await imageTile.toBuffer();
+    
+    console.timeEnd("toBuffer()");
 
-    const buf = await imageTile.toBuffer();
+    console.time("resize()");
+    
+    const resizedImage = sharp(buffer).resize(256, 256, {fit: 'fill'})
 
-    console.log(`toBuffer(): ${Date.now() - startTime}ms`);
+    console.timeEnd("resize()");
 
-    startTime = Date.now();
-
-    const resizedImage = await sharp(buf).resize(256, 256, {fit: 'fill'})
-
-    console.log(`resize(): ${Date.now() - startTime}ms`);
     return resizedImage;
   }
 

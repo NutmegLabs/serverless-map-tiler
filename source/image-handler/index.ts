@@ -26,6 +26,32 @@ const secretProvider = new SecretProvider(secretsManagerClient);
 export async function handler(event: ImageHandlerEvent): Promise<ImageHandlerExecutionResult> {
   console.info("Received event:", JSON.stringify(event, null, 2));
 
+  try {
+    console.time("getObject()");
+    const data = await s3Client.getObject({
+      Bucket: "ntmg-media",
+      Key: buildS3CacheKey(event.path)
+    }).promise();
+
+    const headers = {
+      "Content-Type": "image/png",
+      "Cache-Control": "max-age=31536000,public,immutable",
+      "Last-Modified": "Thu, 01 Jan 1970 00:00:00 GMT",
+      "Expires": "Thu, 31 Dec 2037 23:55:55 GMT",
+    };
+
+    console.timeEnd("getObject()");
+
+    return {
+      statusCode: StatusCodes.OK,
+      isBase64Encoded: true,
+      headers,
+      body: data.Body.toString("base64"),
+    };
+  } catch (error) {
+    console.error(error);
+  }
+  
   const imageRequest = new ImageRequest(s3Client, secretProvider);
   const imageHandler = new ImageHandler(s3Client, rekognitionClient);
   const isAlb = event.requestContext && Object.prototype.hasOwnProperty.call(event.requestContext, "elb");
@@ -39,14 +65,36 @@ export async function handler(event: ImageHandlerEvent): Promise<ImageHandlerExe
     let headers = getResponseHeaders(false, isAlb);
     headers["Content-Type"] = imageRequestInfo.contentType;
     // eslint-disable-next-line dot-notation
-    headers["Expires"] = imageRequestInfo.expires;
-    headers["Last-Modified"] = imageRequestInfo.lastModified;
-    headers["Cache-Control"] = imageRequestInfo.cacheControl;
+
+    if (imageRequestInfo.expires) {
+      headers["Expires"] = imageRequestInfo.expires;
+    } else {
+      headers["Expires"] = "Thu, 31 Dec 2037 23:55:55 GMT";
+    }
+    if (imageRequestInfo.lastModified) {
+      headers["Last-Modified"] = imageRequestInfo.lastModified;
+    } else {
+      headers["Last-Modified"] = "Thu, 01 Jan 1970 00:00:00 GMT";
+    }
+    if (imageRequestInfo.cacheControl) {
+      headers["Cache-Control"] = imageRequestInfo.cacheControl;
+    } else {
+      headers["Cache-Control"] = "public, max-age=31536000, immutable";
+    }
 
     // Apply the custom headers overwriting any that may need overwriting
     if (imageRequestInfo.headers) {
       headers = { ...headers, ...imageRequestInfo.headers };
     }
+
+    console.time("putObject()");
+    await s3Client.putObject({
+      Bucket: "ntmg-media",
+      Key: buildS3CacheKey(event.path),
+      Body: Buffer.from(processedRequest, "base64"),
+      ContentType: "image/png",
+    }).promise();
+    console.timeEnd("putObject()");
 
     return {
       statusCode: StatusCodes.OK,
@@ -189,4 +237,8 @@ export function getErrorResponse(error) {
       status: StatusCodes.INTERNAL_SERVER_ERROR,
     }),
   };
+}
+
+function buildS3CacheKey(path: string): string {
+  return `map/tiles/${path}`;
 }
