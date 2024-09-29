@@ -69,7 +69,7 @@ export class BackEnd extends Construct {
           ],
         }),
         new PolicyStatement({
-          actions: ["s3:GetObject"],
+          actions: ["s3:GetObject", "s3:PutObject"],
           resources: props.createSourceBucketsResource("/*"),
         }),
         new PolicyStatement({
@@ -77,7 +77,7 @@ export class BackEnd extends Construct {
           resources: props.createSourceBucketsResource(),
         }),
         new PolicyStatement({
-          actions: ["s3:GetObject"],
+          actions: ["s3:GetObject", "s3:PutObject"],
           resources: [`arn:aws:s3:::${props.fallbackImageS3Bucket}/${props.fallbackImageS3KeyBucket}`],
         }),
         new PolicyStatement({

@@ -89,7 +89,7 @@ export class CustomResourcesConstruct extends Construct {
               resources: this.createSourceBucketsResource(),
             }),
             new PolicyStatement({
-              actions: ["s3:GetObject"],
+              actions: ["s3:GetObject", "s3:PutObject"],
               resources: [`arn:aws:s3:::${props.fallbackImageS3Bucket}/${props.fallbackImageS3KeyBucket}`],
             }),
             new PolicyStatement({

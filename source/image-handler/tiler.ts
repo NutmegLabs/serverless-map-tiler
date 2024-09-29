@@ -124,7 +124,7 @@ export const getTileImage = async (imageRequestInfo: ImageRequestInfo): Promise<
   const boundingBoxWidthInTiles = boundingBoxTopRightTile.x - boundingBoxTopLeftTile.x;
   const boundingBoxHeightInTiles = boundingBoxBottomLeftTile.y - boundingBoxTopLeftTile.y;
 
-  // Return white image if tile is out of bounds
+  // Return solid color image if tile is out of bounds
   if (
     x + 1 < boundingBoxTopLeftTile.x ||
     x > boundingBoxBottomRightTile.x ||
@@ -139,7 +139,7 @@ export const getTileImage = async (imageRequestInfo: ImageRequestInfo): Promise<
         channels: 4,
         background: { r: 63, g: 120, b: 106, alpha: 255 },
       },
-    });
+    }).png();
   }
 
   console.time("getOriginalImage()");
