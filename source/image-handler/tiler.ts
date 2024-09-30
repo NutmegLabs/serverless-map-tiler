@@ -220,12 +220,18 @@ export const getTileImage = async (imageRequestInfo: ImageRequestInfo): Promise<
 
     console.time("resize()");
     
-    const resizedImage = sharp(buffer).resize(256, 256, {fit: 'fill'})
+    const resizedImage = sharp(buffer).resize(256, 256, {fit: 'fill'}).webp({
+      nearLossless: true,
+      quality: 60,
+    });
 
     console.timeEnd("resize()");
 
     return resizedImage;
   }
 
-  return imageTile;
+  return imageTile.webp({
+    nearLossless: true,
+    quality: 60,
+  });
 };

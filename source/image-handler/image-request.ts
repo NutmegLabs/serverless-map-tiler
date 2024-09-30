@@ -112,11 +112,11 @@ export class ImageRequest {
 
       imageRequestInfo.headers = this.parseImageHeaders(event, imageRequestInfo.requestType);
 
-      imageRequestInfo.outputFormat = ImageFormatTypes.PNG;
-      imageRequestInfo.contentType = ContentTypes.PNG;
+      imageRequestInfo.outputFormat = ImageFormatTypes.WEBP;
+      imageRequestInfo.contentType = ContentTypes.WEBP;
       imageRequestInfo.headers = {
         ...imageRequestInfo.headers,
-        "Content-Type": ContentTypes.PNG,
+        "Content-Type": ContentTypes.WEBP,
       };
 
       return imageRequestInfo;
