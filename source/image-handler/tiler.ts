@@ -89,7 +89,7 @@ function imageSizeAfterRotation(size: [number, number], degrees: number): [numbe
 
 export const getTileImage = async (imageRequestInfo: ImageRequestInfo): Promise<sharp.Sharp> => {
   const tilerParams = imageRequestInfo.tilerParams;
-  const { x, y, zoom, overlayWidthInMeters, rotationDegrees, topLeftLat, topLeftLong, aspectRatioWidth, aspectRatioHeight } = tilerParams;
+  const { x, y, zoom, overlayWidthInMeters, rotationDegrees, topLeftLat, topLeftLong, aspectRatioWidth, aspectRatioHeight, outputDimension } = tilerParams;
 
   const scale = Math.pow(2, zoom);
 
@@ -210,8 +210,10 @@ export const getTileImage = async (imageRequestInfo: ImageRequestInfo): Promise<
 
   console.timeEnd("extend()");
 
+  const outputWidth = outputDimension ?? 256;
+  const outputHeight = outputDimension ?? 256;
 
-  if (right - left > 256 || bottom - top > 256) {
+  if (right - left > outputWidth || bottom - top > outputHeight) {
     console.time("toBuffer()");
     
     const buffer = await imageTile.toBuffer();
@@ -219,11 +221,12 @@ export const getTileImage = async (imageRequestInfo: ImageRequestInfo): Promise<
     console.timeEnd("toBuffer()");
 
     console.time("resize()");
-    
-    const resizedImage = sharp(buffer).resize(256, 256, {fit: 'fill'}).webp({
-      nearLossless: true,
-      quality: 60,
-    });
+    const resizedImage = sharp(buffer)
+      .resize(outputWidth, outputHeight, {fit: 'fill'})
+      .webp({
+        nearLossless: true,
+        quality: 80,
+      });
 
     console.timeEnd("resize()");
 
@@ -232,6 +235,6 @@ export const getTileImage = async (imageRequestInfo: ImageRequestInfo): Promise<
 
   return imageTile.webp({
     nearLossless: true,
-    quality: 60,
+    quality: 80,
   });
 };
