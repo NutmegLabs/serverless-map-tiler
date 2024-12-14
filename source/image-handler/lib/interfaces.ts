@@ -47,6 +47,9 @@ export interface TilerImageRequest {
   x: number;
   y: number;
   zoom: number;
+
+  // Width and height of the square image in pixels
+  outputDimension?: number;
 }
 
 export interface BoundingBox {

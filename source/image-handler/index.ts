@@ -37,7 +37,7 @@ export async function handler(event: ImageHandlerEvent): Promise<ImageHandlerExe
       }).promise();
 
       const headers = {
-        "Content-Type": "image/png",
+        "Content-Type": "image/webp",
         "Cache-Control": "max-age=31536000,public,immutable",
         "Last-Modified": "Thu, 01 Jan 1970 00:00:00 GMT",
         "Expires": "Thu, 31 Dec 2037 23:55:55 GMT",
@@ -96,7 +96,7 @@ export async function handler(event: ImageHandlerEvent): Promise<ImageHandlerExe
       Bucket: "ntmg-media",
       Key: buildS3CacheKey(event.path),
       Body: Buffer.from(processedRequest, "base64"),
-      ContentType: "image/png",
+      ContentType: "image/webp",
     }).promise();
     console.timeEnd("putObject()");
 
