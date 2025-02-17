@@ -131,13 +131,13 @@ export const getTileImage = async (imageRequestInfo: ImageRequestInfo): Promise<
     y + 1 < boundingBoxTopLeftTile.y ||
     y > boundingBoxBottomRightTile.y
   ) {
-    // Create a 4x4 image with background color
+    // Create a 4x4 image with transparent background
     return sharp({
       create: {
         width: 4,
         height: 4,
         channels: 4,
-        background: { r: 63, g: 120, b: 106, alpha: 255 },
+        background: { r: 0, g: 0, b: 0, alpha: 0 },
       },
     }).png();
   }
@@ -152,7 +152,7 @@ export const getTileImage = async (imageRequestInfo: ImageRequestInfo): Promise<
     console.time("rotate()");
 
     imageTile = await imageTile.rotate(rotationDegrees, {
-      background: { r: 63, g: 120, b: 106, alpha: 255 },
+      background: { r: 0, g: 0, b: 0, alpha: 0 },
     });
 
     console.timeEnd("rotate()");
@@ -204,7 +204,7 @@ export const getTileImage = async (imageRequestInfo: ImageRequestInfo): Promise<
       right: rightExtension,
       bottom: bottomExtension,
       left: leftExtension,
-      background: { r: 63, g: 120, b: 106, alpha: 255 },
+      background: { r: 0, g: 0, b: 0, alpha: 0 },
     });
   }
 
